@@ -137,9 +137,10 @@ if (tabSignup) {
 if (authForm) {
   authForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+    // APRÈS (CORRIGÉ)
     const endpoint = isLoginMode
-      ? "http://localhost:3000/login"
-      : "http://localhost:3000/signup";
+      ? "https://calendtasks-api.onrender.com/login"
+      : "https://calendtasks-api.onrender.com/signup";
 
     const bodyData = { email: authEmail.value, password: authPassword.value };
     if (!isLoginMode) bodyData.name = authName.value;
