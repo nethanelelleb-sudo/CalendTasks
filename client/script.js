@@ -139,8 +139,8 @@ if (authForm) {
     e.preventDefault();
     // APRÈS (CORRIGÉ)
     const endpoint = isLoginMode
-      ? "https://calendtasks-api.onrender.com/login"
-      : "https://calendtasks-api.onrender.com/signup";
+      ? "https://calendtasks.onrender.com/login"
+      : "https://calendtasks.onrender.com/signup";
 
     const bodyData = { email: authEmail.value, password: authPassword.value };
     if (!isLoginMode) bodyData.name = authName.value;
