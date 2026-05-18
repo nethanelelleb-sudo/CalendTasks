@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CalendTasks</title>
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      
+      <nav class="side-nav">
+        <div class="logo">
+          <i class="fa-solid fa-bolt"></i> CalendTasks
+        </div>
+        
+        <ul class="nav-links">
+          <li id="nav-notes" class="active">
+            <i class="fa-solid fa-list-check"></i> Master List
+          </li>
+          <li id="nav-calendar">
+            <i class="fa-regular fa-calendar-days"></i> Schedule
+          </li>
+        </ul>
+
+        <div id="logout-container" style="margin-top: auto; padding: 24px; display: none">
+          <button id="logout-btn" style="width: 100%; padding: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+          </button>
+        </div>
+      </nav>
+
+      <div class="binder-rings">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+      </div>
+
+      <main class="main-content">
+        
+        <header class="top-bar">
+          <h2 id="top-bar-title">Master List</h2>
+          
+          <div class="top-bar-auth">
+            <button id="top-login-btn" class="modern-btn">
+              Log In / Sign Up
+            </button>
+            
+            <div id="user-profile" class="hidden">
+              <div class="avatar"><i class="fa-solid fa-user"></i></div>
+              <span id="user-name-display"></span>
+              <button id="top-logout-btn" class="modern-btn outline">
+                Log Out
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <section id="notes-view" class="view-section">
+          <div class="create-note-container">
+            <form id="create-note-form">
+              <input 
+                type="text" 
+                id="note-category" 
+                placeholder="Project / Category" 
+                class="note-title-input" 
+                autocomplete="off" 
+              />
+              
+              <div class="note-input-wrapper">
+                <input 
+                  type="text" 
+                  id="note-text" 
+                  placeholder="Add a task..." 
+                  required 
+                  autocomplete="off" 
+                />
+                <input type="date" id="note-date" title="Schedule Date (optional)" />
+                <input type="time" id="note-time" title="Schedule Time (optional)" />
+                <button type="submit" class="add-btn" title="Save">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <div class="notes-grid" id="notes-grid"></div>
+        </section>
+
+        <section id="calendar-view" class="view-section active-view">
+          <div class="calendar-notebook">
+            
+            <header class="calendar-header">
+              <div class="view-toggles">
+                <button id="toggle-month" class="active-toggle">Month</button>
+                <button id="toggle-week">Week</button>
+              </div>
+              
+              <div class="selectors">
+                <button id="prev-time">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <select id="month-select"></select>
+                <select id="year-select"></select>
+                <button id="next-time">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            </header>
+
+            <div class="calendar-slider-container">
+              <div id="month-grid-container" class="slide-pane active-pane">
+                <div class="weekdays">
+                  <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div id="calendar-days" class="days-grid"></div>
+              </div>
+
+              <div id="week-grid-container" class="slide-pane">
+                <div class="weekdays">
+                  <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div id="week-days" class="days-grid"></div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <div id="todo-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <button id="close-modal" class="close-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <h3 id="modal-date-title">Schedule</h3>
+        <ul id="task-list" class="modal-task-list"></ul>
+        
+        <form id="add-task-form">
+          <input type="time" id="new-task-time" />
+          <input type="text" id="new-task-input" placeholder="Meeting / Task..." required />
+          
+          <select id="new-task-recurrence" style="padding: 10px; border: 1px solid var(--border); border-radius: 6px; outline: none; background: #f8fafc; font-weight: 500; cursor: pointer;">
+            <option value="">Once</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+          
+          <button type="submit" class="save-btn">Plan</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="auth-modal" class="modal-overlay hidden">
+      <div class="modal-content auth-box">
+        <button id="close-auth-modal" class="close-btn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="auth-tabs">
+          <button id="tab-login" class="auth-tab-btn active-tab">Log In</button>
+          <button id="tab-signup" class="auth-tab-btn">Sign Up</button>
+        </div>
+
+        <form id="auth-form">
+          <div class="auth-input-group hidden" id="name-group">
+            <label for="auth-name">Full Name</label>
+            <input type="text" id="auth-name" placeholder="John Doe" />
+          </div>
+          
+          <div class="auth-input-group">
+            <label for="auth-email">Business Email</label>
+            <input type="email" id="auth-email" placeholder="name@company.com" required autocomplete="email" />
+          </div>
+          
+          <div class="auth-input-group">
+            <label for="auth-password">Password</label>
+            <input type="password" id="auth-password" placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+          
+          <button type="submit" id="auth-submit-btn" class="save-btn auth-btn-block">
+            Unlock Features
+          </button>
+        </form>
+        
+        <p class="auth-notice">
+          <i class="fa-solid fa-lock"></i> Secure login with JSON Web Tokens (JWT)
+        </p>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
