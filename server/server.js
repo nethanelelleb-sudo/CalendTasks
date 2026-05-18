@@ -8,31 +8,23 @@ const { rateLimit } = require("express-rate-limit");
 require("dotenv").config();
 
 const app = express();
-// Middleware pour autoriser le CORS (Netlify)
-app.use((req, res, next) => {
-  // On autorise explicitement ton site Netlify
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://calendartaskslev.netlify.app",
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS",
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // Gérer la requête "Preflight" (OPTIONS) que le navigateur envoie avant le POST
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
-const PORT = process.env.PORT || 3000;
+// 1. CONFIGURATION PROPRE ET UNIQUE DE CORS (On autorise uniquement ton Netlify)
+app.use(
+  cors({
+    origin: "https://calendartaskslev.netlify.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
-app.use(cors());
+// 2. LES AUTRES MIDDLEWARES GLOBAUX
 app.use(express.json());
 app.use(morgan("dev"));
 
+const PORT = process.env.PORT || 3000;
+
+// 3. LE RATE LIMITER
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -41,6 +33,7 @@ const limiter = rateLimit({
 app.use("/login", limiter);
 app.use("/signup", limiter);
 
+// 4. CONNEXION MONGODB
 mongoose
   .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/calendtasks")
   .then(() => console.log("✅ Connected to MongoDB"))
@@ -48,6 +41,7 @@ mongoose
 
 const JWT_SECRET = process.env.JWT_SECRET || "executive_master_key_2026";
 
+// 5. TES SCHÉMAS ET ROUTES CONTINUENT EN DESSOUS...
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
