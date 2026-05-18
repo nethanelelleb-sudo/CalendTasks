@@ -952,6 +952,11 @@ async function startApp() {
   if (document.getElementById("new-task-time")) {
     modalTimePicker = flatpickr("#new-task-time", timeConfig);
   }
+
+  const calendarBtn = document.getElementById("nav-calendar");
+  if (calendarBtn) {
+    calendarBtn.click();
+  }
 }
 
 startApp();
