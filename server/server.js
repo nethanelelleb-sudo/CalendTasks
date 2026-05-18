@@ -8,6 +8,25 @@ const { rateLimit } = require("express-rate-limit");
 require("dotenv").config();
 
 const app = express();
+// Middleware pour autoriser le CORS (Netlify)
+app.use((req, res, next) => {
+  // On autorise explicitement ton site Netlify
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://calendartaskslev.netlify.app",
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS",
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Gérer la requête "Preflight" (OPTIONS) que le navigateur envoie avant le POST
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -44,7 +63,11 @@ const TaskSchema = new mongoose.Schema({
   date: { type: String },
   time: { type: String },
   completed: { type: Boolean, default: false },
-  recurrence: { type: String, enum: ["", "daily", "weekly", "monthly"], default: "" },
+  recurrence: {
+    type: String,
+    enum: ["", "daily", "weekly", "monthly"],
+    default: "",
+  },
 });
 
 const Task = mongoose.model("Task", TaskSchema);
@@ -53,10 +76,14 @@ const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) return res.status(401).json({ message: "Access Denied: No Token Provided" });
+  if (!token)
+    return res
+      .status(401)
+      .json({ message: "Access Denied: No Token Provided" });
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid or Expired Token" });
+    if (err)
+      return res.status(403).json({ message: "Invalid or Expired Token" });
     req.user = user;
     next();
   });
@@ -66,13 +93,16 @@ app.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email already registered" });
+    if (existingUser)
+      return res.status(400).json({ message: "Email already registered" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ name, email, password: hashedPassword });
     await user.save();
 
-    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: "24h" });
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      expiresIn: "24h",
+    });
     res.status(201).json({ token, name: user.name });
   } catch (error) {
     res.status(500).json({ message: "Error creating account" });
@@ -87,9 +117,12 @@ app.post("/login", async (req, res) => {
 
     const validPassword = await bcrypt.hash(password, 10);
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: "24h" });
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      expiresIn: "24h",
+    });
     res.json({ token, name: user.name });
   } catch (error) {
     res.status(500).json({ message: "Login error" });
@@ -120,7 +153,7 @@ app.put("/tasks/:id", authenticateToken, async (req, res) => {
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
       req.body,
-      { new: true }
+      { new: true },
     );
     if (!task) return res.status(404).json({ message: "Task not found" });
     res.json(task);
@@ -131,7 +164,10 @@ app.put("/tasks/:id", authenticateToken, async (req, res) => {
 
 app.delete("/tasks/:id", authenticateToken, async (req, res) => {
   try {
-    const task = await Task.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    const task = await Task.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
     if (!task) return res.status(404).json({ message: "Task not found" });
     res.json({ message: "Task deleted" });
   } catch (error) {
