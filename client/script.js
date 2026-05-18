@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/tasks";
+const API_URL = "https://calendtasks.onrender.com/tasks";
 let allTasks = [];
 let savedTasksByDate = {};
 
@@ -107,7 +107,9 @@ if (noteTimeInput) {
 }
 
 if (topLoginBtn) {
-  topLoginBtn.addEventListener("click", () => authModal.classList.remove("hidden"));
+  topLoginBtn.addEventListener("click", () =>
+    authModal.classList.remove("hidden"),
+  );
 }
 
 if (tabLogin) {
@@ -169,7 +171,9 @@ if (authForm) {
 }
 
 if (closeAuthBtn) {
-  closeAuthBtn.addEventListener("click", () => authModal.classList.add("hidden"));
+  closeAuthBtn.addEventListener("click", () =>
+    authModal.classList.add("hidden"),
+  );
 }
 
 if (topLogoutBtn) {
@@ -318,7 +322,7 @@ function renderNotesGrid() {
     const card = document.createElement("div");
     card.className = "note-card";
     let displayTitle = category;
-    
+
     if (/^\d{4}-\d{2}-\d{2}$/.test(category)) {
       const dateParts = category.split("-");
       displayTitle = new Date(
@@ -331,7 +335,7 @@ function renderNotesGrid() {
         year: "numeric",
       });
     }
-    
+
     card.innerHTML = `<h3 class="card-title">${displayTitle}</h3>`;
     const ul = document.createElement("ul");
     ul.className = "card-task-list";
@@ -339,7 +343,7 @@ function renderNotesGrid() {
     tasks.forEach((task) => {
       const li = document.createElement("li");
       li.className = `task-item ${task.completed ? "completed-task" : ""}`;
-      
+
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.className = "custom-checkbox";
@@ -347,7 +351,7 @@ function renderNotesGrid() {
       checkbox.addEventListener("change", () =>
         toggleTaskCompletion(task._id, task.completed),
       );
-      
+
       const spanText = document.createElement("span");
       spanText.className = "task-text";
       spanText.textContent = task.text;
@@ -366,7 +370,7 @@ function renderNotesGrid() {
         dateBadge.innerHTML = `<i class="fa-regular fa-calendar"></i> ${task.date.substring(5).replace("-", "/")}`;
         li.appendChild(dateBadge);
       }
-      
+
       if (task.time && !task.completed) {
         const timeBadge = document.createElement("span");
         timeBadge.className = "task-time-badge";
@@ -387,7 +391,7 @@ function renderNotesGrid() {
       li.appendChild(actions);
       ul.appendChild(li);
     });
-    
+
     card.appendChild(ul);
 
     const inlineForm = document.createElement("form");
@@ -424,7 +428,7 @@ function renderNotesGrid() {
         console.error("Error adding inline item:", error);
       }
     });
-    
+
     card.appendChild(inlineForm);
     notesGrid.appendChild(card);
   }
@@ -467,8 +471,18 @@ createNoteForm.addEventListener("submit", async (e) => {
 });
 
 const monthNames = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 const hebrewFormatter = new Intl.DateTimeFormat("en-US-u-ca-hebrew", {
@@ -520,7 +534,7 @@ function initSelectors() {
     opt.textContent = i;
     yearSelect.appendChild(opt);
   }
-  
+
   monthSelect.addEventListener("change", (e) => {
     displayedMonth = parseInt(e.target.value);
     if (currentViewMode === "week") {
@@ -531,7 +545,7 @@ function initSelectors() {
     }
     refreshCalendarView();
   });
-  
+
   yearSelect.addEventListener("change", (e) => {
     displayedYear = parseInt(e.target.value);
     if (currentViewMode === "week") {
@@ -594,12 +608,12 @@ function createDayCell(dayNumber, extraClass, relativeMonth, holidaysMap) {
   const topDiv = document.createElement("div");
   topDiv.style.display = "flex";
   topDiv.style.justifyContent = "space-between";
-  
+
   const daySpan = document.createElement("span");
   daySpan.textContent = dayNumber;
   daySpan.style.fontWeight = "700";
   topDiv.appendChild(daySpan);
-  
+
   const hebrewSpan = document.createElement("span");
   hebrewSpan.className = "hebrew-date";
   hebrewSpan.textContent = hebrewFormatter.format(
@@ -633,7 +647,7 @@ function createDayCell(dayNumber, extraClass, relativeMonth, holidaysMap) {
   const sortedTasks = dayTasks.sort((a, b) =>
     (a.time || "24:00").localeCompare(b.time || "24:00"),
   );
-  
+
   sortedTasks.slice(0, 3).forEach((t) => {
     const b = document.createElement("div");
     b.className = "cell-task-badge";
@@ -802,7 +816,7 @@ function renderModalTasks() {
     dayTasks.forEach((task) => {
       const li = document.createElement("li");
       li.className = `task-item ${task.completed ? "completed-task" : ""}`;
-      
+
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.className = "custom-checkbox";
@@ -810,7 +824,7 @@ function renderModalTasks() {
       checkbox.addEventListener("change", () =>
         toggleTaskCompletion(task._id, task.completed),
       );
-      
+
       const spanText = document.createElement("span");
       spanText.className = "task-text";
       spanText.textContent = task.text;
@@ -929,11 +943,11 @@ async function startApp() {
       }
     },
   };
-  
+
   if (document.getElementById("note-time")) {
     flatpickr("#note-time", timeConfig);
   }
-  
+
   if (document.getElementById("new-task-time")) {
     modalTimePicker = flatpickr("#new-task-time", timeConfig);
   }
